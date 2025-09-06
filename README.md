@@ -22,7 +22,7 @@ DharmaSync is a mobile-first web application designed to combat the modern epide
 🟡 Dharmik Points: A gamified system that rewards users for completing tasks and engaging in positive activities.<br>
 🟡 Community Hub: A local social network where users can post and interact for real-world connections.<br>
 🟡 Adventure Page: A spiritual travel guide to India's holy places, offering curated lists and Google Maps navigation.<br>
-🟡 Wisdom Library: A curated collection of books on culture and philosophy to promote the timeless habit of reading.<br>
+🟡 Wisdom Library: A curated collection of books to promote the timeless habit of reading.<br>
 🟡 AI-Powered "Dharma Navigator": A specialized chatbot for structured, step-by-step guidance.<br>
 🟡 Mentor Page: A platform to book sessions with certified mental health experts.<br>
 
