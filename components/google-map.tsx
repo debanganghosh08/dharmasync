@@ -2,20 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 
-interface Post {
-  id: string
-  type: "offering" | "requesting"
-  title: string
-  description: string
-  category: string
-  author: string
-  location: string
-  distance: number
-  timeAgo: string
-  responses: number
-  coordinates: { lat: number; lng: number }
-}
-
 interface HolyPlace {
   id: string
   name: string
@@ -29,8 +15,7 @@ interface HolyPlace {
 
 interface GoogleMapProps {
   apiKey: string
-  posts?: Post[]
-  selectedPost?: Post | null
+  places?: HolyPlace[]
 }
 
 declare global {
@@ -40,18 +25,25 @@ declare global {
   }
 }
 
-export function GoogleMap({ apiKey, posts, selectedPost }: GoogleMapProps) {
+export function GoogleMap({ apiKey, places }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [map, setMap] = useState<any>(null)
+  const [infoWindow, setInfoWindow] = useState<any>(null)
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      })
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (error) => {
+          console.error("Error getting user location:", error)
+        }
+      )
     }
   }, [])
 
@@ -62,9 +54,9 @@ export function GoogleMap({ apiKey, posts, selectedPost }: GoogleMapProps) {
       try {
         if (!mapRef.current || !window.google) return
 
-        const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat: 37.7749, lng: -122.4194 },
-          zoom: 13,
+        const mapInstance = new window.google.maps.Map(mapRef.current, {
+          center: { lat: 28.6139, lng: 77.2090 },
+          zoom: 5,
           styles: [
             {
               featureType: "all",
@@ -92,58 +84,42 @@ export function GoogleMap({ apiKey, posts, selectedPost }: GoogleMapProps) {
           fullscreenControl: true,
         })
 
-        const directionsService = new window.google.maps.DirectionsService()
-        const directionsRenderer = new window.google.maps.DirectionsRenderer()
-        directionsRenderer.setMap(map)
+        setMap(mapInstance)
 
-        posts?.forEach((post) => {
+        const infoWindowInstance = new window.google.maps.InfoWindow()
+        setInfoWindow(infoWindowInstance)
+
+        places?.forEach((place) => {
           const marker = new window.google.maps.Marker({
-            position: post.coordinates,
-            map: map,
-            title: post.title,
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 10,
-              fillColor: post.type === "offering" ? "#d7c49e" : "#d9a26b",
-              fillOpacity: 0.9,
-              strokeColor: "#ffffff",
-              strokeWeight: 3,
-            },
-          })
-
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: `
-              <div style="padding: 12px; max-width: 280px; font-family: 'Batangas', system-ui, sans-serif;">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #2d2d2d;">${post.title}</h3>
-                <p style="margin: 8px 0; font-size: 14px; color: #666;">${post.description}</p>
-                <button style="width: 100%; background: #d7c49e; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
-                  Connect
-                </button>
-              </div>
-            `,
+            position: place.coordinates,
+            map: mapInstance,
+            title: place.name,
           })
 
           marker.addListener("click", () => {
-            if ((map as any).openInfoWindow) {
-              (map as any).openInfoWindow.close()
+            if (infoWindowInstance) {
+              infoWindowInstance.close()
+              infoWindowInstance.setContent(`
+                <div style="padding: 12px; max-width: 280px; font-family: 'Batangas', system-ui, sans-serif;">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #2d2d2d;">${place.name}</h3>
+                  <p style="margin: 8px 0; font-size: 14px; color: #666;">${place.description}</p>
+                  <button id="connect-button-${place.id}" style="width: 100%; background: #d7c49e; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+                    Connect
+                  </button>
+                  <div id="distance-${place.id}" style="margin-top: 8px; font-size: 14px; color: #333;"></div>
+                </div>
+              `)
+              infoWindowInstance.open(mapInstance, marker)
+
+              const connectButton = document.getElementById(`connect-button-${place.id}`)
+              if (connectButton) {
+                connectButton.addEventListener("click", () => {
+                  handleConnect(place)
+                })
+              }
             }
-            infoWindow.open(map, marker)
-            ;(map as any).openInfoWindow = infoWindow
           })
         })
-
-        if (selectedPost && userLocation) {
-          const request = {
-            origin: userLocation,
-            destination: selectedPost.coordinates,
-            travelMode: "DRIVING",
-          }
-          directionsService.route(request, (result, status) => {
-            if (status == "OK") {
-              directionsRenderer.setDirections(result)
-            }
-          })
-        }
       } catch (err) {
         console.error("Error initializing map:", err)
       }
@@ -151,7 +127,7 @@ export function GoogleMap({ apiKey, posts, selectedPost }: GoogleMapProps) {
 
     if (typeof window.google === "undefined") {
       const script = document.createElement("script")
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,drawing&callback=initMap`
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,drawing,geometry&callback=initMap`
       script.async = true
       script.defer = true
       ;(window as any).initMap = initMap
@@ -159,9 +135,25 @@ export function GoogleMap({ apiKey, posts, selectedPost }: GoogleMapProps) {
     } else {
       initMap()
     }
-  }, [apiKey, posts, selectedPost, userLocation])
+  }, [apiKey, places])
 
-  
+  const handleConnect = (place: HolyPlace) => {
+    if (userLocation) {
+      const origin = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
+      const destination = new window.google.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
+      const distance = window.google.maps.geometry.spherical.computeDistanceBetween(origin, destination);
+      const distanceInKm = (distance / 1000).toFixed(2);
+      const distanceDiv = document.getElementById(`distance-${place.id}`)
+      if (distanceDiv) {
+        distanceDiv.innerHTML = `Distance: ${distanceInKm} km`
+      }
+    } else {
+      const distanceDiv = document.getElementById(`distance-${place.id}`)
+      if (distanceDiv) {
+        distanceDiv.innerHTML = `Please enable location services to calculate the distance.`
+      }
+    }
+  }
 
   return (
     <div

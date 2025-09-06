@@ -96,7 +96,7 @@ export default function HomePage() {
           className={`w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
         <div className="absolute inset-0 flex items-end justify-center pb-8">
-          <h1 
+          <h1
             className={`font-['Eagle_Lake'] text-7xl font-bold text-foreground leading-none transition-all duration-1000 ease-out ${videoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
           >
             DharmaSync
@@ -128,7 +128,7 @@ export default function HomePage() {
           <Card className="border-border/50 glass-effect hover-lift">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4 glass-button">
-                <CheckSquare className="h-6 w-6 text-accent" />
+                <CheckSquare className="h-6 w-6 text-yellow-500" /> {/* Changed color */}
               </div>
               <CardTitle className="text-lg">Mindful Tasks</CardTitle>
             </CardHeader>
@@ -142,7 +142,7 @@ export default function HomePage() {
           <Card className="border-border/50 glass-effect hover-lift">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mx-auto mb-4 glass-button">
-                <Users className="h-6 w-6 text-secondary" />
+                <Users className="h-6 w-6 text-yellow-500" /> {/* Changed color */}
               </div>
               <CardTitle className="text-lg">Local Community</CardTitle>
             </CardHeader>
@@ -156,13 +156,13 @@ export default function HomePage() {
           <Card className="border-border/50 glass-effect hover-lift">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4 glass-button">
-                <MessageCircle className="h-6 w-6 text-primary" />
+                <MessageCircle className="h-6 w-6 text-yellow-500" /> {/* Changed color */}
               </div>
               <CardTitle className="text-lg">AI Guidance</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center">
-                Receive personalized mindfulness guidance through our intelligent chatbot companion.
+                Receive personalized mindfulness guidance through our intelligent navigator companion.
               </CardDescription>
             </CardContent>
           </Card>
@@ -170,7 +170,7 @@ export default function HomePage() {
           <Card className="border-border/50 glass-effect hover-lift">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4 glass-button">
-                <Calendar className="h-6 w-6 text-accent" />
+                <Calendar className="h-6 w-6 text-yellow-500" /> {/* Changed color */}
               </div>
               <CardTitle className="text-lg">Sacred Adventures</CardTitle>
             </CardHeader>

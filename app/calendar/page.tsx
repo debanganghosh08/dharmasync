@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import Confetti from 'react-confetti'
+import { toast } from "sonner"
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Navigation } from "@/components/navigation"
@@ -17,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight } from "lucide-react"
+import { Toaster } from "@/components/ui/sonner"
 
 interface CalendarEvent {
   id: string
@@ -61,6 +64,7 @@ export default function CalendarPage() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isEventModalOpen, setIsEventModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",
@@ -101,6 +105,17 @@ export default function CalendarPage() {
     const percentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     return { totalTasks, completedTasks, percentage };
   }, [events]);
+
+  useEffect(() => {
+    if (monthlyProgress.percentage === 100) {
+      const storedPoints = localStorage.getItem("dharmikPoints");
+      if (storedPoints) {
+        setShowCelebration(true);
+        toast("Congrats!🥳 You completed all the tasks");
+        setTimeout(() => setShowCelebration(false), 5000);
+      }
+    }
+  }, [monthlyProgress.percentage]);
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -162,6 +177,8 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
+      {showCelebration && <Confetti />}
+      <Toaster />
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">

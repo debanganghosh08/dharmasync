@@ -6,7 +6,7 @@ import Image from 'next/image' // Import the Image component
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, Home, CheckSquare, Users, MessageCircle, User, Info, Mountain, LogIn, LogOut, BookOpen } from 'lucide-react'
+import { Menu, Home, CheckSquare, Users, MessageCircle, User, Info, Mountain, LogIn, LogOut, BookOpen, Star } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -22,8 +22,9 @@ const navigationItems = [
   { name: 'My Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Adventure', href: '/adventure', icon: Mountain },
-  { name: 'Chatbot', href: '/chatbot', icon: MessageCircle },
-  { name: 'About Us', href: '/about', icon: Info },
+  { name: 'Mentors', href: '/mentors', icon: Users },
+  { name: 'Navigator', href: '/navigator', icon: MessageCircle },
+  
   { name: 'Wisdom', href: '/wisdom-library', icon: BookOpen },
 ]
 
@@ -97,6 +98,12 @@ export function Navigation() {
                     <Link href="/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/rewards">
+                      <Star className="mr-2 h-4 w-4" />
+                      <span>Rewards</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>

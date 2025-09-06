@@ -12,6 +12,8 @@ const batangas = Inter({
   variable: "--font-batangas",
 })
 
+import { Toaster } from "@/components/ui/sonner"
+
 export default function ClientLayout({
   children,
 }: Readonly<{
@@ -33,6 +35,7 @@ export default function ClientLayout({
         {!isLoading && (
           <>
             {children}
+            <Toaster />
             <Footer />
           </>
         )}
@@ -48,8 +51,12 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Contact Bar */}
           <div className="hover-lift p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <h3 className="font-semibold text-lg mb-3 text-primary">Contact</h3>
+            <h3 className="font-semibold text-lg mb-3 text-primary">Know More</h3>
             <div className="space-y-2">
+              <a href="/about" className="flex items-center gap-2 text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span>About Us</span>
+              </a>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />

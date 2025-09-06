@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, Clock, Users, MessageCircle, Plus, Calendar, Heart, MapPin, TrendingUp, Loader2 } from "lucide-react"
+import { CheckCircle, Clock, Users, MessageCircle, Plus, Calendar, Heart, MapPin, TrendingUp, Loader2, Star } from "lucide-react"
 import Link from "next/link"
 import { 
   Dialog, 
@@ -30,10 +30,15 @@ export default function DashboardPage() {
   );
   const [newIntention, setNewIntention] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dharmikPoints, setDharmikPoints] = useState(0);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
+    }
+    const storedPoints = localStorage.getItem("dharmikPoints");
+    if (storedPoints) {
+      setDharmikPoints(parseInt(storedPoints, 10));
     }
   }, [status, router])
 
@@ -247,7 +252,7 @@ export default function DashboardPage() {
                   </Link>
                 </Button>
                 <Button asChild className="w-full justify-start premium-button bg-transparent" variant="outline">
-                  <Link href="/chatbot">
+                  <Link href="/navigator">
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Chat with AI Guide
                   </Link>
@@ -261,12 +266,12 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Mindfulness Progress */}
+            {/* Stats */}
             <Card className="border-border/50 hover-lift">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  Weekly Progress
+                  Stats
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -290,6 +295,15 @@ export default function DashboardPage() {
                     <span className="text-muted-foreground">6/7</span>
                   </div>
                   <Progress value={86} className="h-2" />
+                </div>
+                <div className="flex items-center gap-3 pt-4">
+                  <div className="w-10 h-10 bg-yellow-400/10 rounded-lg flex items-center justify-center glass-button">
+                    <Star className="h-5 w-5 text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Medals</p>
+                    <p className="text-2xl font-bold text-foreground">{dharmikPoints}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

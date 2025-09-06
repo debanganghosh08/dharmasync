@@ -418,7 +418,7 @@ export default function AdventurePage() {
           </CardHeader>
           <CardContent>
             <div className="relative aspect-video w-full h-96 rounded-lg overflow-hidden border border-border/30">
-              <GoogleMap type="adventure" places={popularHolyPlaces} apiKey={mapsApiKey} />
+              <GoogleMap apiKey={mapsApiKey} places={popularHolyPlaces} />
             </div>
           </CardContent>
         </Card>

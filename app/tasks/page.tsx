@@ -1,6 +1,8 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Confetti from 'react-confetti'
+import { toast } from "sonner"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,7 +21,8 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CheckCircle, Circle, Plus, Filter, Calendar, Heart, Briefcase, User, Star, Clock } from "lucide-react"
+import { CheckCircle, Circle, Plus, Filter, Calendar, Heart, Briefcase, User, Star, Clock, Medal } from "lucide-react"
+import { Toaster } from "@/components/ui/sonner"
 
 interface Task {
   id: string
@@ -96,6 +99,16 @@ export default function TasksPage() {
   const [filter, setFilter] = useState<"all" | "mindfulness" | "work" | "personal">("all")
   const [showCompleted, setShowCompleted] = useState(true)
   const [isAddingTask, setIsAddingTask] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [dharmikPoints, setDharmikPoints] = useState(0)
+
+  useEffect(() => {
+    const storedPoints = localStorage.getItem("dharmikPoints");
+    if (storedPoints) {
+      setDharmikPoints(parseInt(storedPoints, 0));
+    }
+  }, []);
+
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -106,7 +119,18 @@ export default function TasksPage() {
   })
 
   const toggleTask = (taskId: string) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, completed: !task.completed } : task)))
+    const newTasks = tasks.map((task) => (task.id === taskId ? { ...task, completed: !task.completed } : task));
+    setTasks(newTasks);
+
+    const allTasksCompleted = newTasks.every(task => task.completed);
+    if (allTasksCompleted) {
+      setShowCelebration(true);
+      const newPoints = dharmikPoints + 1;
+      setDharmikPoints(newPoints);
+      localStorage.setItem("dharmikPoints", newPoints.toString());
+      toast("Congrats!🥳 You completed all the tasks");
+      setTimeout(() => setShowCelebration(false), 5000);
+    }
   }
 
   const addTask = () => {
@@ -181,6 +205,8 @@ export default function TasksPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
+      {showCelebration && <Confetti />}
+      
       <Navigation />
 
       <div className="container mx-auto px-4 py-8">
@@ -298,42 +324,55 @@ export default function TasksPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid sm:grid-cols-4 gap-4 mb-6">
           <Card className="border-border/50 glass-effect hover-lift">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center glass-button">
-                  <CheckCircle className="h-5 w-5 text-primary" />
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center glass-button">
+                  <CheckCircle className="h-4 w-4 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Completed</p>
-                  <p className="text-2xl font-bold text-foreground">{completedCount}</p>
+                  <p className="text-xs text-muted-foreground">Completed</p>
+                  <p className="text-xl font-bold text-foreground">{completedCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/50 glass-effect hover-lift">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center glass-button">
-                  <Circle className="h-5 w-5 text-secondary" />
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center glass-button">
+                  <Circle className="h-4 w-4 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Remaining</p>
-                  <p className="text-2xl font-bold text-foreground">{totalCount - completedCount}</p>
+                  <p className="text-xs text-muted-foreground">Remaining</p>
+                  <p className="text-xl font-bold text-foreground">{totalCount - completedCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/50 glass-effect hover-lift">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center glass-button">
-                  <Star className="h-5 w-5 text-accent" />
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center glass-button">
+                  <Star className="h-4 w-4 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Progress</p>
-                  <p className="text-2xl font-bold text-foreground">{Math.round(completionPercentage)}%</p>
+                  <p className="text-xs text-muted-foreground">Progress</p>
+                  <p className="text-xl font-bold text-foreground">{Math.round(completionPercentage)}%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-border/50 glass-effect hover-lift">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-yellow-400/10 rounded-lg flex items-center justify-center glass-button">
+                  <Medal className="h-4 w-4 text-yellow-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Dharmik Points</p>
+                  <p className="text-xl font-bold text-foreground">{dharmikPoints}</p>
                 </div>
               </div>
             </CardContent>
